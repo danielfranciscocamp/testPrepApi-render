@@ -21,8 +21,13 @@ router.post('/', (req, res) => {
        
        db.query(sql, [email, password], (err, results) => {
               if (err) {
-              return res.status(401).json({ message: 'Invalid credentials' });
+               return res.status(401).json({ message: 'Internal server error' });
               }
+
+               if (results.length === 0) {
+                 return res.status(401).json({ message: 'Invalid credentials' });
+              }
+              
               const username = results?.[0]?.[`${role}_name`];
               const token = jwt.sign({ username }, secret, { expiresIn: '1h' });
               res.json({ token, username });
